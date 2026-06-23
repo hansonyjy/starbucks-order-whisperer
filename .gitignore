@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Generated pipeline output
+submission.csv
+new_submission.csv
+
+# Confidential challenge dataset — do NOT distribute
+products.csv
+queries_train.csv
+queries_test.csv
+
+# Secrets
+.env
+*.key
+
+# macOS
+.DS_Store
