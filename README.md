@@ -8,7 +8,7 @@ A three-stage recommendation engine that turns messy, human, half-caffeinated St
 
 …into a ranked list of the drinks you actually want.
 
-This repo is my **solo rebuild** of the winning solution — same idea, cleaner architecture, and a smarter ranking brain. (More on why it's better at the bottom.)
+This repo is my **solo rebuild** of our winning solution — same idea, cleaner architecture, and a smarter ranking brain. (More on why it's better at the bottom.)
 
 ---
 
