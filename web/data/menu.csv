@@ -1,0 +1,116 @@
+product_id,name,category,subcategory,temperature,caffeine_mg,calories,sugar_g,protein_g,contains_dairy,contains_nuts,contains_gluten,is_vegan,description,price
+BRW_001,Pike Place Roast,brewed,medium_roast,hot,310,5,0,1,False,False,False,True,Rich full-bodied medium roast brewed fresh throughout the day,3.25
+BRW_002,Starbucks Blonde Roast,brewed,light_roast,hot,360,5,0,1,False,False,False,True,Lighter body with a mellow and smooth taste perfect for those who prefer a gentler brew,3.25
+BRW_003,Dark Roast,brewed,dark_roast,hot,260,5,0,1,False,False,False,True,Bold and robust with a smoky finish for coffee lovers who like it strong,3.25
+BRW_004,Decaf Pike Place Roast,brewed,decaf,hot,20,5,0,1,False,False,False,True,All the rich flavor of Pike Place with nearly no caffeine,3.25
+BRW_005,Clover Brewed Coffee,brewed,medium_roast,hot,280,5,0,1,False,False,False,True,Single-serve brewed with precision for a nuanced and well-balanced cup,3.75
+ESP_001,Caffè Americano,espresso,americano,hot,225,15,0,1,False,False,False,True,Espresso shots topped with hot water for a light crema and bold flavor,3.75
+ESP_002,Blonde Caffè Americano,espresso,americano,hot,255,15,0,1,False,False,False,True,Blonde espresso shots with hot water for a smooth and mellow americano,3.75
+ESP_003,Caffè Latte,espresso,latte,hot,150,190,18,13,True,False,False,False,Rich espresso balanced with steamed milk and a light layer of foam,5.25
+ESP_004,Vanilla Latte,espresso,latte,hot,150,250,35,12,True,False,False,False,Espresso with vanilla syrup and steamed milk topped with foam,5.75
+ESP_005,Caramel Macchiato,espresso,macchiato,hot,150,250,33,10,True,False,False,False,Vanilla-flavored drink marked with espresso shots and a drizzle of caramel,5.75
+ESP_006,Caffè Mocha,espresso,mocha,hot,175,360,35,14,True,False,False,False,Espresso with mocha sauce and steamed milk topped with whipped cream,5.45
+ESP_007,White Chocolate Mocha,espresso,mocha,hot,150,420,53,14,True,False,False,False,Espresso with white chocolate sauce and steamed milk topped with whipped cream,5.75
+ESP_008,Cappuccino,espresso,cappuccino,hot,150,140,10,10,True,False,False,False,Dark espresso with a deep layer of foamed milk,4.75
+ESP_009,Flat White,espresso,flat_white,hot,195,170,13,11,True,False,False,False,Ristretto shots with steamed whole milk for a velvety and intense texture,5.25
+ESP_010,Honey Almondmilk Flat White,espresso,flat_white,hot,225,170,24,4,False,True,False,True,Blonde espresso with almond milk and honey for a subtly sweet dairy-free flat white,5.75
+ESP_011,Cinnamon Dolce Latte,espresso,latte,hot,150,340,42,12,True,False,False,False,Espresso with cinnamon dolce syrup and steamed milk topped with whipped cream,5.75
+ESP_012,Oatmilk Honey Latte,espresso,latte,hot,150,190,25,5,False,False,False,True,Espresso with oatmilk and a touch of honey for natural dairy-free sweetness,5.75
+ESP_013,Pumpkin Spice Latte,espresso,latte,hot,150,380,50,14,True,False,False,False,Espresso with pumpkin spice sauce and steamed milk topped with whipped cream,5.95
+ESP_014,Peppermint Mocha,espresso,mocha,hot,175,440,63,14,True,False,False,False,Espresso with peppermint and mocha sauces and steamed milk topped with whipped cream,5.95
+ESP_015,Espresso,espresso,shot,hot,75,5,0,0,False,False,False,True,A single shot of concentrated espresso with a layer of golden crema,3.25
+ESP_016,Doppio,espresso,shot,hot,150,10,0,0,False,False,False,True,Two shots of espresso with a rich layer of golden crema,3.75
+ESP_017,Cortado,espresso,cortado,hot,150,80,7,5,True,False,False,False,Equal parts espresso and steamed milk for a smooth and balanced flavor,4.75
+ESP_018,Coconutmilk Latte,espresso,latte,hot,150,180,22,2,False,False,False,True,Espresso with coconutmilk for a dairy-free tropical twist on a classic latte,5.75
+ESP_019,Pistachio Latte,espresso,latte,hot,150,390,44,13,True,True,False,False,Espresso with pistachio sauce and steamed milk topped with salted brown butter crumbles,5.95
+ICE_001,Iced Caffè Americano,espresso,americano,iced,225,15,0,1,False,False,False,True,Espresso shots over ice topped with water and a light layer of crema,4.25
+ICE_002,Iced Caffè Latte,espresso,latte,iced,150,130,11,9,True,False,False,False,Espresso poured over ice with cold milk for a smooth refreshing drink,5.25
+ICE_003,Iced Vanilla Latte,espresso,latte,iced,150,250,36,9,True,False,False,False,Espresso with vanilla syrup poured over ice and topped with milk,5.75
+ICE_004,Iced Caramel Macchiato,espresso,macchiato,iced,150,250,34,9,True,False,False,False,Vanilla syrup and milk over ice topped with espresso shots and caramel drizzle,5.75
+ICE_005,Iced Caffè Mocha,espresso,mocha,iced,175,300,33,11,True,False,False,False,Espresso with mocha sauce over ice topped with cold milk and whipped cream,5.45
+ICE_006,Iced White Chocolate Mocha,espresso,mocha,iced,150,380,51,11,True,False,False,False,Espresso with white chocolate sauce over ice and cold milk,5.75
+ICE_007,Iced Brown Sugar Oatmilk Shaken Espresso,espresso,shaken,iced,255,120,13,3,False,False,False,True,Blonde espresso shaken with brown sugar and cinnamon over ice topped with oatmilk,5.45
+ICE_008,Iced Toasted Vanilla Oatmilk Shaken Espresso,espresso,shaken,iced,255,130,12,3,False,False,False,True,Blonde espresso shaken with toasted vanilla syrup over ice topped with oatmilk,5.75
+ICE_009,Iced Chocolate Almondmilk Shaken Espresso,espresso,shaken,iced,255,110,10,3,False,True,False,True,Espresso shaken with chocolate malt powder over ice topped with almondmilk,5.45
+ICE_010,Iced Cinnamon Dolce Latte,espresso,latte,iced,150,290,43,9,True,False,False,False,Espresso with cinnamon dolce syrup poured over ice and topped with cold milk,5.75
+ICE_011,Iced Peppermint Mocha,espresso,mocha,iced,175,380,58,11,True,False,False,False,Espresso with peppermint and mocha sauces over ice with cold milk and whipped cream,5.95
+ICE_012,Iced Flat White,espresso,flat_white,iced,195,170,14,11,True,False,False,False,Ristretto shots over ice with cold whole milk for a rich and velvety sip,5.25
+ICE_013,Iced Caramel Latte,espresso,latte,iced,150,280,38,9,True,False,False,False,Espresso with caramel syrup poured over ice and topped with cold milk,5.75
+ICE_014,Iced Pumpkin Spice Latte,espresso,latte,iced,150,310,48,9,True,False,False,False,Espresso with pumpkin spice sauce poured over ice and topped with cold milk,5.95
+ICE_015,Iced Hazelnut Oatmilk Shaken Espresso,espresso,shaken,iced,255,150,17,3,False,True,False,True,Espresso shaken with hazelnut syrup over ice topped with oatmilk,5.75
+ICE_016,Iced Oatmilk Latte,espresso,latte,iced,150,130,10,3,False,False,False,True,Espresso over ice with oatmilk for a creamy dairy-free latte,5.45
+ICE_017,Iced Coconutmilk Latte,espresso,latte,iced,150,130,11,1,False,False,False,True,Espresso over ice with coconutmilk for a tropical dairy-free treat,5.45
+ICE_018,Iced Almondmilk Latte,espresso,latte,iced,150,80,4,2,False,True,False,True,Espresso over ice with almondmilk for a light nutty dairy-free latte,5.45
+CBR_001,Cold Brew Coffee,cold_brew,cold_brew,iced,205,5,0,0,False,False,False,True,Slow-steeped in cold water for 20 hours for a smooth and naturally sweet bold brew,4.95
+CBR_002,Vanilla Sweet Cream Cold Brew,cold_brew,cold_brew,iced,185,110,14,1,True,False,False,False,Cold brew topped with house-made vanilla sweet cream for a rich finish,5.45
+CBR_003,Salted Caramel Cream Cold Brew,cold_brew,cold_brew,iced,185,300,45,1,True,False,False,False,Cold brew with vanilla syrup topped with salted caramel cream cold foam,5.75
+CBR_004,Chocolate Cream Cold Brew,cold_brew,cold_brew,iced,185,290,38,2,True,False,False,False,Cold brew topped with house-made chocolate cream cold foam,5.75
+CBR_005,Irish Cream Cold Brew,cold_brew,cold_brew,iced,185,200,31,1,True,False,False,False,Cold brew with Irish cream syrup topped with silky cold foam and cocoa powder,5.75
+CBR_006,Nitro Cold Brew,cold_brew,nitro,iced,280,5,0,0,False,False,False,True,Cold brew infused with nitrogen for a smooth creamy texture and natural sweetness,5.25
+CBR_007,Nitro Cold Brew with Sweet Cream,cold_brew,nitro,iced,265,70,4,1,True,False,False,False,Nitro cold brew topped with house-made vanilla sweet cream,5.75
+CBR_008,Nitro with Salted Honey Cold Foam,cold_brew,nitro,iced,265,130,14,1,True,False,False,False,Nitro cold brew topped with salted honey cold foam for a sweet-salty sip,5.95
+CBR_009,Brown Sugar Oatmilk Cold Brew,cold_brew,cold_brew,iced,205,120,14,3,False,False,False,True,Cold brew shaken with brown sugar and cinnamon topped with oatmilk,5.75
+CBR_010,Hazelnut Oatmilk Cold Brew,cold_brew,cold_brew,iced,205,130,16,3,False,True,False,True,Cold brew with hazelnut syrup topped with oatmilk for a nutty dairy-free cold brew,5.75
+CBR_011,Reserve Cold Brew,cold_brew,cold_brew,iced,200,5,0,0,False,False,False,True,Small-batch slow-steeped cold brew with a distinctive and complex character,5.45
+CBR_012,Vanilla Sweet Cream Nitro,cold_brew,nitro,iced,265,120,11,1,True,False,False,False,Nitro cold brew topped with house-made vanilla sweet cream cold foam,5.95
+FRP_001,Coffee Frappuccino,frappuccino,coffee,blended,95,230,45,4,True,False,False,False,Coffee blended with milk and ice topped with whipped cream,5.25
+FRP_002,Caramel Frappuccino,frappuccino,coffee,blended,90,380,54,5,True,False,False,False,Coffee and caramel sauce blended with milk and ice topped with whipped cream,5.75
+FRP_003,Mocha Frappuccino,frappuccino,coffee,blended,95,370,50,6,True,False,False,False,Coffee and mocha sauce blended with milk and ice topped with whipped cream,5.45
+FRP_004,Vanilla Bean Frappuccino,frappuccino,creme,blended,0,390,59,6,True,False,False,False,Vanilla bean powder blended with milk and ice topped with whipped cream,5.45
+FRP_005,Strawberry Frappuccino,frappuccino,creme,blended,0,370,56,5,True,False,False,False,Strawberry puree blended with milk and ice topped with whipped cream,5.45
+FRP_006,Java Chip Frappuccino,frappuccino,coffee,blended,110,440,59,7,True,False,True,False,Coffee and mocha sauce with chocolate chips blended with milk and ice,5.75
+FRP_007,White Chocolate Mocha Frappuccino,frappuccino,coffee,blended,65,420,59,5,True,False,False,False,White chocolate mocha sauce blended with coffee and milk over ice,5.75
+FRP_008,Pumpkin Spice Frappuccino,frappuccino,creme,blended,0,380,57,4,True,False,False,False,Pumpkin spice sauce blended with milk and ice topped with whipped cream,5.75
+FRP_009,Cinnamon Dolce Frappuccino,frappuccino,coffee,blended,65,370,56,4,True,False,False,False,Cinnamon dolce syrup blended with coffee and milk over ice,5.75
+FRP_010,Espresso Frappuccino,frappuccino,coffee,blended,155,220,39,4,True,False,False,False,Espresso and coffee blended with milk and ice for an extra caffeine kick,5.45
+FRP_011,Caramel Ribbon Crunch Frappuccino,frappuccino,coffee,blended,90,470,67,5,True,False,True,False,Dark caramel sauce and coffee blended with milk and ice topped with caramel ribbon crunch,5.95
+FRP_012,Matcha Green Tea Frappuccino,frappuccino,creme,blended,70,420,60,6,True,False,False,False,Matcha green tea powder blended with milk and ice topped with whipped cream,5.75
+TEA_001,Earl Grey Tea,tea,black,hot,40,0,0,0,False,False,False,True,Classic black tea with bergamot oil for a citrusy and floral flavor,3.25
+TEA_002,English Breakfast Tea,tea,black,hot,40,0,0,0,False,False,False,True,A full-bodied robust black tea blend perfect with or without milk,3.25
+TEA_003,Jade Citrus Mint Tea,tea,green,hot,16,0,0,0,False,False,False,True,Green tea with spearmint and lemongrass for a refreshing citrusy taste,3.25
+TEA_004,Peach Tranquility Tea,tea,herbal,hot,0,0,0,0,False,False,False,True,Herbal blend with peach chamomile and rose hips for a sweet floral cup,3.25
+TEA_005,Chai Tea,tea,chai,hot,95,0,0,0,False,False,False,True,Spiced black tea blend with cinnamon cardamom and clove,3.25
+TEA_006,Chai Tea Latte,tea,chai,hot,95,240,42,10,True,False,False,False,Black tea infused with warming spices and steamed milk for a cozy spiced latte,5.25
+TEA_007,Matcha Green Tea Latte,tea,matcha,hot,80,240,32,11,True,False,False,False,Smooth and creamy matcha green tea blended with steamed milk,5.25
+TEA_008,Royal English Breakfast Tea Latte,tea,black,hot,40,180,24,8,True,False,False,False,Steeped English breakfast tea with steamed milk for a cozy and comforting cup,5.25
+TEA_009,Comfort Wellness Tea,tea,herbal,hot,0,0,0,0,False,False,False,True,Soothing blend of honey citrus and ginger for wellness and warmth,3.25
+TEA_010,Mint Majesty Tea,tea,herbal,hot,0,0,0,0,False,False,False,True,Spearmint and peppermint herbal blend for a refreshing caffeine-free minty cup,3.25
+TEA_011,Emperor's Clouds and Mist Tea,tea,green,hot,35,0,0,0,False,False,False,True,Delicate shade-grown green tea with a light and floral character,3.25
+ICT_001,Iced Black Tea,tea,black,iced,25,0,0,0,False,False,False,True,Classic black tea chilled over ice for a clean and refreshing drink,3.25
+ICT_002,Iced Green Tea,tea,green,iced,25,0,0,0,False,False,False,True,Unsweetened green tea over ice for a light and refreshing sip,3.25
+ICT_003,Iced Passion Tango Tea,tea,herbal,iced,0,0,0,0,False,False,False,True,Hibiscus herbal tea with floral notes served chilled over ice,3.25
+ICT_004,Iced Chai Tea Latte,tea,chai,iced,95,240,45,8,True,False,False,False,Black tea infused with spices shaken over ice and topped with cold milk,5.25
+ICT_005,Iced Matcha Tea Latte,tea,matcha,iced,80,200,28,6,True,False,False,False,Matcha green tea shaken over ice and topped with cold milk,5.25
+ICT_006,Iced Royal English Breakfast Tea Latte,tea,black,iced,40,160,22,6,True,False,False,False,English breakfast tea over ice topped with cold milk for a refreshing latte,5.25
+ICT_007,Iced Black Tea Lemonade,tea,black,iced,25,90,22,0,False,False,False,True,Black tea mixed with lemonade poured over ice for a bright and tangy sip,4.25
+ICT_008,Iced Green Tea Lemonade,tea,green,iced,25,90,23,0,False,False,False,True,Green tea mixed with lemonade poured over ice for a refreshing twist,4.25
+ICT_009,Iced Passion Tango Tea Lemonade,tea,herbal,iced,0,80,20,0,False,False,False,True,Hibiscus tea blended with lemonade over ice for a vibrant pink and fruity sip,4.25
+ICT_010,Iced Peach Green Tea Lemonade,tea,green,iced,25,120,30,0,False,False,False,True,Green tea with peach juice and lemonade over ice for a sweet peachy refresher,4.75
+REF_001,Strawberry Açaí Refresher,refresher,fruity,iced,45,90,20,0,False,False,False,True,Sweet strawberry and açaí flavors with real fruit pieces over ice,4.75
+REF_002,Mango Dragonfruit Refresher,refresher,fruity,iced,45,90,20,0,False,False,False,True,Tropical mango and dragonfruit flavors with real fruit pieces over ice,4.75
+REF_003,Pineapple Passionfruit Refresher,refresher,fruity,iced,45,90,19,0,False,False,False,True,Bright pineapple and passionfruit flavors with green coffee extract over ice,4.75
+REF_004,Strawberry Açaí Lemonade Refresher,refresher,lemonade,iced,45,130,30,0,False,False,False,True,Strawberry açaí refresher mixed with hand-crafted lemonade over ice,5.25
+REF_005,Mango Dragonfruit Lemonade Refresher,refresher,lemonade,iced,45,130,29,0,False,False,False,True,Mango dragonfruit refresher mixed with hand-crafted lemonade over ice,5.25
+REF_006,Pineapple Passionfruit Lemonade Refresher,refresher,lemonade,iced,45,130,28,0,False,False,False,True,Pineapple passionfruit refresher mixed with hand-crafted lemonade over ice,5.25
+REF_007,Pink Drink,refresher,coconut,iced,45,140,24,2,False,False,False,True,Strawberry açaí refresher made with coconutmilk instead of water over ice,5.25
+REF_008,Dragon Drink,refresher,coconut,iced,45,130,23,1,False,False,False,True,Mango dragonfruit refresher made with coconutmilk instead of water over ice,5.25
+REF_009,Star Drink,refresher,coconut,iced,45,150,26,1,False,False,False,True,Kiwi starfruit refresher made with coconutmilk instead of water over ice,5.25
+REF_010,Paradise Drink,refresher,coconut,iced,45,140,24,1,False,False,False,True,Pineapple passionfruit refresher made with coconutmilk instead of water over ice,5.25
+REF_011,Kiwi Starfruit Refresher,refresher,fruity,iced,45,90,20,0,False,False,False,True,Kiwi and starfruit flavors with green coffee extract over ice for a sweet tropical sip,4.75
+REF_012,Berry Hibiscus Refresher,refresher,fruity,iced,45,60,13,0,False,False,False,True,Very berry hibiscus flavors with real blackberries over ice,4.75
+REF_013,Kiwi Starfruit Lemonade Refresher,refresher,lemonade,iced,45,120,27,0,False,False,False,True,Kiwi starfruit refresher mixed with hand-crafted lemonade over ice,5.25
+OTH_001,Hot Chocolate,other,hot_chocolate,hot,25,400,43,14,True,False,False,False,Rich mocha sauce with steamed milk topped with whipped cream,4.75
+OTH_002,White Hot Chocolate,other,hot_chocolate,hot,0,400,48,14,True,False,False,False,White chocolate sauce with steamed milk topped with whipped cream,4.75
+OTH_003,Steamed Apple Juice,other,juice,hot,0,170,38,0,False,False,False,True,Fresh apple juice steamed to a warm and cozy temperature,3.75
+OTH_004,Caramel Apple Spice,other,steamer,hot,0,380,68,0,False,False,False,True,Steamed apple juice with cinnamon syrup topped with whipped cream and caramel drizzle,4.75
+OTH_005,Bottled Water,other,water,iced,0,0,0,0,False,False,False,True,Still spring water,2.50
+OTH_006,Sparkling Water,other,water,iced,0,0,0,0,False,False,False,True,Lightly carbonated sparkling water,2.95
+OTH_007,Peach Lemonade,other,lemonade,iced,0,150,34,0,False,False,False,True,Hand-crafted lemonade with a splash of peach juice over ice,3.75
+OTH_008,Lemonade,other,lemonade,iced,0,130,31,0,False,False,False,True,Hand-crafted lemonade made with real lemon juice over ice,3.50
+OTH_009,Vanilla Steamer,other,steamer,hot,0,270,39,12,True,False,False,False,Steamed milk with vanilla syrup for a cozy caffeine-free treat,4.25
+OTH_010,Cinnamon Dolce Steamer,other,steamer,hot,0,310,44,12,True,False,False,False,Steamed milk with cinnamon dolce syrup topped with whipped cream,4.75
+OTH_011,Iced Matcha Lemonade,other,lemonade,iced,80,190,42,2,False,False,False,True,Matcha green tea blended with lemonade over ice for a vibrant earthy-tangy drink,5.25
+OTH_012,Violet Drink,other,fruity,iced,45,120,18,1,False,False,False,True,Very berry hibiscus refresher made with coconutmilk over ice,5.25
+OTH_013,Iced Pineapple Matcha Drink,other,matcha,iced,80,170,32,3,False,False,False,True,Matcha layered over pineapple ginger syrup and coconutmilk over ice,5.75
+OTH_014,Medicine Ball Tea,other,herbal,hot,40,130,29,0,False,False,False,True,Jade citrus mint and peach tranquility teas with honey and lemonade for soothing warmth,5.25
+OTH_015,Brown Sugar Oatmilk Matcha,other,matcha,hot,80,210,30,5,False,False,False,True,Matcha blended with oatmilk and brown sugar for a rich dairy-free latte,5.75

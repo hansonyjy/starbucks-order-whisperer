@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BrewMatch — Order in plain English</title>
+<meta name="description" content="A 3-stage AI pipeline that reads your craving and ranks 115 drinks. Built on a 1st-place UCLA × Starbucks Data Challenge solution." />
+<meta property="og:title" content="BrewMatch — Order in plain English" />
+<meta property="og:description" content="Type what you want. We'll rank the menu. Built on a 1st-place competition pipeline." />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brown:      #854F0B;
+    --brown-light:#FAEEDA;
+    --brown-mid:  #EF9F27;
+    --green:      #1D9E75;
+    --green-light:#E1F5EE;
+    --green-dark: #085041;
+    --gray-bg:    #F7F5F0;
+    --gray-border:#E0DDD8;
+    --gray-text:  #6B6860;
+    --text:       #1A1916;
+    --white:      #FFFFFF;
+    --radius-sm:  6px;
+    --radius-md:  10px;
+    --radius-lg:  14px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--gray-bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-border);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; }
+  .nav-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: var(--brown-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .nav-name { font-size: 18px; font-weight: 600; color: var(--text); }
+  .nav-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--brown-light); color: var(--brown);
+    font-size: 12px; font-weight: 600;
+    padding: 5px 12px; border-radius: 999px;
+  }
+  .nav-gh {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--gray-text);
+    text-decoration: none;
+    padding: 6px 12px; border: 1px solid var(--gray-border);
+    border-radius: var(--radius-sm);
+    transition: background 0.15s;
+  }
+  .nav-gh:hover { background: var(--gray-bg); }
+
+  /* HERO */
+  .hero {
+    max-width: 720px; margin: 0 auto;
+    padding: 52px 24px 0;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 36px; font-weight: 700;
+    letter-spacing: -0.5px; line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    font-size: 17px; color: var(--gray-text);
+    line-height: 1.6; margin-bottom: 32px;
+  }
+
+  /* SEARCH BOX */
+  .search-wrap {
+    display: flex; gap: 10px; margin-bottom: 14px;
+  }
+  .search-input {
+    flex: 1;
+    height: 50px; padding: 0 16px;
+    font-size: 16px; color: var(--text);
+    background: var(--white);
+    border: 1.5px solid var(--gray-border);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: var(--brown); }
+  .search-btn {
+    height: 50px; padding: 0 24px;
+    background: var(--brown); color: var(--brown-light);
+    font-size: 15px; font-weight: 600;
+    border: none; border-radius: var(--radius-md);
+    cursor: pointer; white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+  .search-btn:hover { opacity: 0.88; }
+  .search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* CHIPS */
+  .chips {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center; margin-bottom: 40px;
+  }
+  .chip {
+    font-size: 13px; color: var(--gray-text);
+    background: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: 999px; padding: 5px 13px;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .chip:hover { border-color: var(--brown); color: var(--brown); background: var(--brown-light); }
+
+  /* PIPELINE SECTION */
+  #pipeline {
+    max-width: 720px; margin: 0 auto;
+    padding: 0 24px 80px;
+    display: none; /* shown after first query */
+  }
+
+  /* STAGE BLOCK */
+  .stage-block {
+    background: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    margin-bottom: 14px;
+    opacity: 0; transform: translateY(12px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .stage-block.visible { opacity: 1; transform: translateY(0); }
+
+  .stage-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .stage-tag {
+    font-family: monospace; font-size: 11px; font-weight: 700;
+    background: var(--brown-light); color: var(--brown);
+    padding: 3px 8px; border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .stage-title { font-size: 15px; font-weight: 600; }
+  .stage-sub { font-size: 13px; color: var(--gray-text); margin-left: auto; }
+
+  /* CONSTRAINT BADGES */
+  .constraint-row {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .c-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--green-light); color: var(--green-dark);
+    font-size: 13px; font-weight: 500;
+    padding: 5px 11px; border-radius: var(--radius-sm);
+    animation: popIn 0.2s ease backwards;
+  }
+  .c-badge.null-badge {
+    background: var(--gray-bg); color: var(--gray-text);
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* FUNNEL */
+  .funnel-row {
+    display: flex; align-items: center; gap: 16px;
+  }
+  .funnel-num {
+    text-align: center; min-width: 54px;
+  }
+  .funnel-num .big { font-size: 28px; font-weight: 700; }
+  .funnel-num .lbl { font-size: 12px; color: var(--gray-text); margin-top: 2px; }
+  .funnel-bar-wrap {
+    flex: 1; height: 10px;
+    background: var(--gray-bg);
+    border-radius: 999px; overflow: hidden;
+  }
+  .funnel-bar {
+    height: 100%; background: var(--green);
+    border-radius: 999px;
+    width: 0%; transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .funnel-arrow { font-size: 18px; color: var(--gray-text); }
+
+  /* RESULT CARDS */
+  .result-card {
+    display: flex; align-items: flex-start; gap: 14px;
+    border: 1px solid var(--gray-border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px; margin-bottom: 10px;
+    background: var(--white);
+    opacity: 0; transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .result-card.visible { opacity: 1; transform: translateY(0); }
+
+  .rank-circle {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .rank-1 { background: var(--brown); color: var(--brown-light); }
+  .rank-other { background: #E0DDD8; color: #5F5E5A; }
+
+  .card-body { flex: 1; }
+  .card-name { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .card-meta { font-size: 12px; color: var(--gray-text); margin-bottom: 8px; }
+  .card-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .match-badge {
+    font-size: 12px; font-weight: 500;
+    background: var(--green-light); color: var(--green-dark);
+    border-radius: 4px; padding: 2px 8px;
+  }
+
+  .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+  .match-bar-wrap { width: 64px; }
+  .match-bar-lbl { font-size: 11px; color: var(--gray-text); text-align: right; margin-bottom: 4px; }
+  .match-bar-bg {
+    height: 6px; border-radius: 999px;
+    background: var(--gray-bg); overflow: hidden;
+  }
+  .match-bar { height: 6px; border-radius: 999px; background: var(--green); width: 0%; transition: width 0.6s ease; }
+  .card-price { font-size: 15px; font-weight: 600; color: var(--brown); }
+
+  /* FOOTER BAR */
+  .footer-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 6px; padding-top: 14px;
+    border-top: 1px solid var(--gray-border);
+    font-size: 12px; color: var(--gray-text);
+  }
+
+  /* LOADING SPINNER */
+  .spinner {
+    display: none;
+    width: 18px; height: 18px;
+    border: 2px solid var(--brown-light);
+    border-top-color: var(--brown);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .status-line {
+    text-align: center; font-size: 13px; color: var(--gray-text);
+    margin: 12px 0; min-height: 20px;
+  }
+
+  /* ERROR */
+  .error-msg {
+    text-align: center; color: #A32D2D;
+    background: #FCEBEB; border: 1px solid #F7C1C1;
+    border-radius: var(--radius-md);
+    padding: 14px 20px; font-size: 14px;
+  }
+
+  /* EXPLAINER */
+  .explainer {
+    background: var(--white);
+    border-top: 1px solid var(--gray-border);
+    padding: 64px 24px;
+  }
+  .explainer-inner { max-width: 720px; margin: 0 auto; }
+  .explainer h2 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  .explainer .sub { font-size: 16px; color: var(--gray-text); margin-bottom: 44px; line-height: 1.6; }
+
+  .stage-explain { display: flex; gap: 20px; margin-bottom: 36px; }
+  .stage-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--brown-light); color: var(--brown);
+    font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .stage-explain h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+  .stage-explain p { font-size: 14px; color: var(--gray-text); line-height: 1.7; }
+  .stage-explain code {
+    font-family: monospace; font-size: 13px;
+    background: var(--gray-bg); padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  .win-block {
+    background: var(--brown-light);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    display: flex; align-items: flex-start; gap: 16px;
+    margin-top: 44px;
+  }
+  .win-trophy { font-size: 32px; }
+  .win-block h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--brown); }
+  .win-block p { font-size: 14px; color: #633806; line-height: 1.6; }
+  .win-block a { color: var(--brown); font-weight: 600; }
+
+  /* SITE FOOTER */
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 13px; color: var(--gray-text);
+    border-top: 1px solid var(--gray-border);
+  }
+  footer a { color: var(--gray-text); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="nav-icon">☕</div>
+    <span class="nav-name">BrewMatch</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="nav-badge">🏆 1st of 19 · UCLA × Starbucks Challenge</div>
+    <a class="nav-gh" href="https://github.com/hansonyjy/starbucks-order-whisperer" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.742 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      Source
+    </a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Order in plain English.<br>We'll rank the menu.</h1>
+  <p>A 3-stage AI pipeline reads your craving, filters 115 drinks,<br>and ranks what's left — with full reasoning shown.</p>
+
+  <div class="search-wrap">
+    <input id="queryInput" class="search-input"
+      type="text"
+      placeholder="e.g. something cold and sweet but no dairy, under $6"
+      maxlength="300" autocomplete="off" />
+    <button id="rankBtn" class="search-btn" onclick="doRank()">Rank it</button>
+  </div>
+
+  <div class="chips" id="chips"></div>
+</div>
+
+<div id="pipeline">
+  <div class="spinner" id="spinner" style="display:block;margin:0 auto 16px;"></div>
+  <div class="status-line" id="statusLine"></div>
+
+  <div class="stage-block" id="stage1">
+    <div class="stage-header">
+      <span class="stage-tag">STAGE 1</span>
+      <span class="stage-title">Constraints extracted</span>
+      <span class="stage-sub" id="s1model">Claude (Haiku 4.5)</span>
+    </div>
+    <div class="constraint-row" id="constraintRow"></div>
+  </div>
+
+  <div class="stage-block" id="stage2">
+    <div class="stage-header">
+      <span class="stage-tag">STAGE 2</span>
+      <span class="stage-title">Hard filters applied</span>
+      <span class="stage-sub" id="s2sub"></span>
+    </div>
+    <div class="funnel-row">
+      <div class="funnel-num">
+        <div class="big" id="totalCount">115</div>
+        <div class="lbl">all drinks</div>
+      </div>
+      <div class="funnel-arrow">→</div>
+      <div class="funnel-bar-wrap">
+        <div class="funnel-bar" id="funnelBar"></div>
+      </div>
+      <div class="funnel-arrow">→</div>
+      <div class="funnel-num">
+        <div class="big" id="filteredCount" style="color:var(--green)">—</div>
+        <div class="lbl">candidates</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage-block" id="stage3">
+    <div class="stage-header">
+      <span class="stage-tag">STAGE 3</span>
+      <span class="stage-title">Ranked results</span>
+      <span class="stage-sub">constraint margin + semantic similarity</span>
+    </div>
+    <div id="resultCards"></div>
+    <div class="footer-bar">
+      <span id="latencyBadge">⚡ —</span>
+      <span id="cacheBadge"></span>
+    </div>
+  </div>
+</div>
+
+<!-- EXPLAINER SECTION -->
+<div class="explainer">
+  <div class="explainer-inner">
+    <h2>How it works</h2>
+    <p class="sub">Under the hood it's a 3-stage retrieval pipeline — the same architecture that won the UCLA × Starbucks Data Challenge. Here's what happens between your query and the ranked list.</p>
+
+    <div class="stage-explain">
+      <div class="stage-num">1</div>
+      <div>
+        <h3>Extract — natural language → structured constraints</h3>
+        <p>Your query is sent to <strong>Claude (Haiku 4.5)</strong> with a strict JSON schema attached. The model is forced by <em>structured output</em> to return valid JSON — no regex, no markdown-stripping, no parse failures. It reads things like <code>"no dairy"</code>, <code>"pick me up"</code>, or <code>"under $5"</code> and maps them to typed fields: <code>dairy_free: true</code>, <code>caffeine_level: "high"</code>, <code>max_price: 5</code>. A subtle but important rule: ambient weather (<em>"it's hot out"</em>) does <em>not</em> set <code>temperature: iced</code>.</p>
+      </div>
+    </div>
+
+    <div class="stage-explain">
+      <div class="stage-num">2</div>
+      <div>
+        <h3>Filter — hard rules knock out non-qualifying drinks</h3>
+        <p>Pure deterministic logic. Category, temperature, calorie cap, sugar cap, price cap, dairy-free, vegan, and caffeine level all become strict boolean filters. Caffeine "levels" map to mg ranges derived from the training data — including a deliberate <code>medium/high</code> overlap at 150–200mg, because that's what the ground-truth labels say. If the filters are too strict and produce zero results, constraints are relaxed progressively (price first, then sugar, then calories) until something survives.</p>
+      </div>
+    </div>
+
+    <div class="stage-explain">
+      <div class="stage-num">3</div>
+      <div>
+        <h3>Rank — constraint margin is primary, semantic is tiebreaker</h3>
+        <p>Each surviving drink gets a <em>constraint margin score</em>: how comfortably it sits inside the limits. Under a 250-cal cap, a 0-cal drink scores higher than a 200-cal one. Caffeine-seeking queries rank by most caffeine first; "keep it mild" queries rank by least. Semantic similarity (a local <code>all-MiniLM-L6-v2</code> embedding) breaks ties between drinks the constraints can't separate — but it's bounded by a tiny ε = 0.001 so it can never flip two drinks whose constraint scores genuinely differ. No paid embedding API, no rate limits, runs offline.</p>
+      </div>
+    </div>
+
+    <div class="win-block">
+      <div class="win-trophy">🏆</div>
+      <div>
+        <h3>1st place out of 19 teams — UCLA × Starbucks Data Challenge</h3>
+        <p>The pipeline above is a solo rebuild of the winning competition solution, with better ranking logic (constraint margin vs. raw similarity) and a more reliable Stage 1 (structured output vs. prompt-and-parse). The original team submission won on NDCG accuracy against a held-out test set. This version is faster, cheaper to run, and more maintainable. <a href="https://github.com/hansonyjy/starbucks-order-whisperer" target="_blank">Full source on GitHub →</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Built by Hanson Yang &nbsp;·&nbsp;
+  <a href="https://github.com/hansonyjy/starbucks-order-whisperer" target="_blank">GitHub</a> &nbsp;·&nbsp;
+  Drink data sourced from public Starbucks nutrition information. Not affiliated with Starbucks Corporation.
+</footer>
+
+<script>
+const STAGE_DELAYS = [0, 600, 1200];
+
+async function loadChips() {
+  try {
+    const r = await fetch('/api/examples');
+    const examples = await r.json();
+    const container = document.getElementById('chips');
+    examples.forEach(ex => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.textContent = ex;
+      chip.onclick = () => {
+        document.getElementById('queryInput').value = ex;
+        doRank();
+      };
+      container.appendChild(chip);
+    });
+  } catch (e) { /* ignore */ }
+}
+
+function setStatus(msg) {
+  document.getElementById('statusLine').textContent = msg;
+}
+
+function showStage(id, delay) {
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    el.classList.add('visible');
+  }, delay);
+}
+
+function constraintLabel(key, val) {
+  const icons = {
+    category: '📂', temperature: val === 'iced' ? '🧊' : val === 'hot' ? '🔥' : '🥤',
+    max_calories: '🔥', max_sugar: '🍬', max_price: '💲',
+    dairy_free: '🥛', vegan: '🌱', caffeine_level: '⚡',
+  };
+  const labels = {
+    category: `category: ${val}`,
+    temperature: `temperature: ${val}`,
+    max_calories: `max calories: ${val}`,
+    max_sugar: `max sugar: ${val}g`,
+    max_price: `max price: $${val}`,
+    dairy_free: 'dairy-free',
+    vegan: 'vegan',
+    caffeine_level: `caffeine: ${val}`,
+  };
+  return { icon: icons[key] || '', text: labels[key] || `${key}: ${val}` };
+}
+
+function renderConstraints(constraints) {
+  const row = document.getElementById('constraintRow');
+  row.innerHTML = '';
+  let delay = 0;
+  const active = Object.entries(constraints).filter(([k, v]) => v !== null && v !== false);
+  if (active.length === 0) {
+    const badge = document.createElement('span');
+    badge.className = 'c-badge null-badge';
+    badge.textContent = 'no hard constraints detected — semantic ranking only';
+    row.appendChild(badge);
+    return;
+  }
+  active.forEach(([key, val]) => {
+    const { icon, text } = constraintLabel(key, val);
+    const badge = document.createElement('span');
+    badge.className = 'c-badge';
+    badge.style.animationDelay = `${delay}ms`;
+    badge.textContent = (icon ? icon + ' ' : '') + text;
+    row.appendChild(badge);
+    delay += 80;
+  });
+}
+
+function renderFunnel(total, filtered) {
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('filteredCount').textContent = filtered;
+  const pct = Math.max(4, Math.round((filtered / total) * 100));
+  setTimeout(() => {
+    document.getElementById('funnelBar').style.width = pct + '%';
+  }, 100);
+  document.getElementById('s2sub').textContent =
+    `${total - filtered} drinks eliminated`;
+}
+
+function renderResults(data) {
+  const container = document.getElementById('resultCards');
+  container.innerHTML = '';
+  data.ranked.forEach((drink, i) => {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+
+    const rankEl = document.createElement('div');
+    rankEl.className = `rank-circle ${i === 0 ? 'rank-1' : 'rank-other'}`;
+    rankEl.textContent = drink.rank;
+
+    const body = document.createElement('div');
+    body.className = 'card-body';
+
+    const meta = [
+      drink.category.replace('_', ' '),
+      drink.temperature,
+      `${drink.caffeine_mg}mg caffeine`,
+      `${drink.calories} cal`,
+    ].join(' · ');
+
+    body.innerHTML = `
+      <div class="card-name">${drink.name}</div>
+      <div class="card-meta">${meta}</div>
+      <div class="card-badges">
+        ${drink.constraint_badges.map(b => `<span class="match-badge">${b}</span>`).join('')}
+      </div>
+    `;
+
+    const right = document.createElement('div');
+    right.className = 'card-right';
+    const matchPct = Math.round(drink.match_score * 100);
+    right.innerHTML = `
+      <div class="match-bar-wrap">
+        <div class="match-bar-lbl">match</div>
+        <div class="match-bar-bg">
+          <div class="match-bar" data-pct="${matchPct}"></div>
+        </div>
+      </div>
+      <div class="card-price">$${drink.price.toFixed(2)}</div>
+    `;
+
+    card.appendChild(rankEl);
+    card.appendChild(body);
+    card.appendChild(right);
+    container.appendChild(card);
+
+    setTimeout(() => {
+      card.classList.add('visible');
+      card.querySelector('.match-bar').style.width = matchPct + '%';
+    }, i * 80);
+  });
+
+  document.getElementById('latencyBadge').textContent =
+    `⚡ ranked ${data.total_products} drinks in ${data.elapsed_ms}ms`;
+  document.getElementById('cacheBadge').textContent =
+    data.cached ? '📦 cached result' : '';
+}
+
+async function doRank() {
+  const query = document.getElementById('queryInput').value.trim();
+  if (!query) return;
+
+  const btn = document.getElementById('rankBtn');
+  btn.disabled = true;
+
+  // Reset pipeline UI
+  const pipeline = document.getElementById('pipeline');
+  pipeline.style.display = 'block';
+  ['stage1','stage2','stage3'].forEach(id => {
+    document.getElementById(id).classList.remove('visible');
+  });
+  document.getElementById('constraintRow').innerHTML = '';
+  document.getElementById('resultCards').innerHTML = '';
+  document.getElementById('funnelBar').style.width = '0%';
+
+  const spinner = document.getElementById('spinner');
+  spinner.style.display = 'block';
+  setStatus('Sending to Claude for constraint extraction…');
+
+  try {
+    const res = await fetch('/api/rank', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Something went wrong.');
+    }
+
+    const data = await res.json();
+    spinner.style.display = 'none';
+    setStatus('');
+
+    // Stage 1 — constraints
+    renderConstraints(data.constraints);
+    showStage('stage1', STAGE_DELAYS[0]);
+
+    // Stage 2 — funnel
+    setTimeout(() => {
+      renderFunnel(data.total_products, data.filtered_count);
+      showStage('stage2', 0);
+    }, STAGE_DELAYS[1]);
+
+    // Stage 3 — results
+    setTimeout(() => {
+      renderResults(data);
+      showStage('stage3', 0);
+    }, STAGE_DELAYS[2]);
+
+  } catch (e) {
+    spinner.style.display = 'none';
+    setStatus('');
+    const pipeline = document.getElementById('pipeline');
+    pipeline.innerHTML = `<div class="error-msg">${e.message}</div>`;
+    pipeline.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// Enter key support
+document.getElementById('queryInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doRank();
+});
+
+loadChips();
+</script>
+</body>
+</html>
