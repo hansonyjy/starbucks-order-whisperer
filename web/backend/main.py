@@ -92,7 +92,7 @@ def _constraint_score(row, constraints: dict) -> float:
     return sum(scores) / len(scores) if scores else 0.0
 
 
-def _rank(query: str, filtered_df: pd.DataFrame, constraints: dict) -> list[str]:
+def _rank(query: str, filtered_df: pd.DataFrame, constraints: dict) -> list[tuple[str, float]]:
     if filtered_df.empty:
         return []
 
@@ -116,7 +116,7 @@ def _rank(query: str, filtered_df: pd.DataFrame, constraints: dict) -> list[str]
         combined.append((pid, score))
 
     combined.sort(key=lambda x: x[1], reverse=True)
-    return [pid for pid, _ in combined]
+    return combined
 
 
 @app.on_event("startup")
@@ -226,10 +226,18 @@ async def rank(req: RankRequest, request: Request):
     if filtered.empty:
         filtered = products
 
-    ranked_ids = _rank(query, filtered, constraints)
+    ranked = _rank(query, filtered, constraints)
+    ranked_ids = [pid for pid, _ in ranked]
 
-    n = len(ranked_ids)
-    score_map = {pid: round(1.0 - i / max(n - 1, 1), 3) for i, pid in enumerate(ranked_ids)}
+    # Display match score from actual match quality, not rank position. Every drink
+    # here already cleared the hard filters, so floor the bar at 0.4 — a valid match
+    # should never read as 0 just because it sorted last.
+    raw_scores = [s for _, s in ranked]
+    lo, hi = (min(raw_scores), max(raw_scores)) if raw_scores else (0.0, 0.0)
+    if hi > lo:
+        score_map = {pid: round(0.4 + 0.6 * (s - lo) / (hi - lo), 3) for pid, s in ranked}
+    else:
+        score_map = {pid: 1.0 for pid, _ in ranked}
 
     ranked_drinks = []
     for i, pid in enumerate(ranked_ids[:10]):
