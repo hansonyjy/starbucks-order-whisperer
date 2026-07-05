@@ -52,8 +52,12 @@ The catch? People don't speak in SQL. "Something to wake me up that won't break 
 ### Stage 1 — Extract 🔍 (`stage1_extract.py`)
 Claude (`claude-haiku-4-5`) reads the query and returns constraints as JSON. The trick: it's pinned to a **JSON schema via structured output**, so the model *physically cannot* hand back malformed JSON. No regex, no markdown-fence stripping, no `try/except` prayer circle. There's also a deliberate guard against the classic trap — *"it's hot out"* should **not** set `temperature: iced`.
 
+A couple of extraction rules earned their keep the hard way:
+- **`category: coffee`** — a generic umbrella for "coffee" / "iced coffee" / "plain coffee" requests that don't name a specific style. Without it, "iced coffee" got pinned to a single category (`cold_brew`) and silently dropped Iced Americano — since the `brewed` category has zero iced options in this menu, "coffee" has to be able to span `brewed` + `cold_brew` + `espresso` at once.
+- **`no_milk`** — distinct from (and stronger than) `dairy_free`. "Black coffee" or "just black" excludes *any* milk, dairy or plant (oat, almond, coconut), which `dairy_free` alone can't express.
+
 ### Stage 2 — Filter 🧹 (`stage2_filter.py`)
-Pure, deterministic pandas. Category, temperature, calories, sugar, price, dairy-free, vegan, and caffeine all become hard filters. Caffeine "levels" map to mg ranges that were **reverse-engineered from the training data** — including a deliberate medium/high overlap at 150–200mg, because that's how the ground truth actually behaves.
+Pure, deterministic pandas. Category (including the `coffee` umbrella), temperature, calories, sugar, price, dairy-free, vegan, black/no-milk, and caffeine all become hard filters. Caffeine "levels" map to mg ranges that were **reverse-engineered from the training data** — including a deliberate medium/high overlap at 150–200mg, because that's how the ground truth actually behaves. The no-milk filter is ingredient-based (subcategory + plant-milk name + foam/cream toppings), not a keyword scan of the description — "perfect with or without milk" in a tea's description shouldn't count as containing milk.
 
 ### Stage 3 — Rank 🎯 (`stage3_rank.py`)
 The interesting part. Ranking is a **hybrid score**:

@@ -32,10 +32,15 @@ Then open http://localhost:8000.
 ```
 browser  →  GET /          → frontend/index.html  (static)
 browser  →  POST /api/rank → backend/main.py
-                              ├─ stage1_extract.py  (Claude)
-                              ├─ stage2_filter.py   (pandas)
-                              └─ stage3_rank.py     (sentence-transformers)
+                              ├─ stage1_extract.py     (Claude — constraint extraction)
+                              ├─ stage2_filter.py      (pandas — hard filters)
+                              └─ TF-IDF + cosine sim   (scikit-learn — semantic tiebreak, in main.py)
 ```
+
+Note: the competition pipeline (`stage3_rank.py`) uses local `sentence-transformers`
+embeddings, but this web demo swaps in TF-IDF instead — no large model download,
+so it stays within Render's free-tier memory limit. Same role in the pipeline
+(a tiny tiebreaker behind constraint margin), different implementation.
 
 Rate limiting: 10 requests / 60s per IP (in-memory).  
 Caching: identical queries (case-insensitive) are served from memory — no duplicate Claude calls.

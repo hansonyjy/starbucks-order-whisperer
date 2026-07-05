@@ -407,7 +407,7 @@
       <div class="stage-num">1</div>
       <div>
         <h3>Extract — natural language → structured constraints</h3>
-        <p>Your query is sent to <strong>Claude (Haiku 4.5)</strong> with a strict JSON schema attached. The model is forced by <em>structured output</em> to return valid JSON — no regex, no markdown-stripping, no parse failures. It reads things like <code>"no dairy"</code>, <code>"pick me up"</code>, or <code>"under $5"</code> and maps them to typed fields: <code>dairy_free: true</code>, <code>caffeine_level: "high"</code>, <code>max_price: 5</code>. A subtle but important rule: ambient weather (<em>"it's hot out"</em>) does <em>not</em> set <code>temperature: iced</code>.</p>
+        <p>Your query is sent to <strong>Claude (Haiku 4.5)</strong> with a strict JSON schema attached. The model is forced by <em>structured output</em> to return valid JSON — no regex, no markdown-stripping, no parse failures. It reads things like <code>"no dairy"</code>, <code>"pick me up"</code>, or <code>"under $5"</code> and maps them to typed fields: <code>dairy_free: true</code>, <code>caffeine_level: "high"</code>, <code>max_price: 5</code>. A subtle but important rule: ambient weather (<em>"it's hot out"</em>) does <em>not</em> set <code>temperature: iced</code>. Two more: a bare <code>"iced coffee"</code> maps to a <code>coffee</code> umbrella category spanning brewed/cold brew/espresso (not just one), and <code>"black coffee"</code> sets <code>no_milk: true</code> — stronger than <code>dairy_free</code>, since it excludes plant milks too.</p>
       </div>
     </div>
 
