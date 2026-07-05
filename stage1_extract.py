@@ -16,6 +16,10 @@ caffeine_level values: none, low, medium, high
 Set a field to null if the query does not mention that constraint.
 temperature must only be set when the customer explicitly requests hot, iced, or blended — not when they describe the weather or other context (e.g. "it's hot out" does NOT set temperature=iced).
 dairy_free and vegan are only true when explicitly requested; never false.
+no_milk is true when the customer wants the drink black or without any milk or cream
+  (e.g. "black coffee", "just black", "no milk", "without milk", "no cream"). It is
+  stronger than dairy_free: it excludes plant milks (oat, almond, coconut) too. Do NOT
+  set no_milk merely because the query names a black-tea variety like "black tea".
 max_calories, max_sugar, max_price are numbers (not strings) when present."""
 
 _SCHEMA = {
@@ -38,6 +42,7 @@ _SCHEMA = {
         "max_price":    {"anyOf": [{"type": "number"}, {"type": "null"}]},
         "dairy_free":   {"anyOf": [{"type": "boolean"}, {"type": "null"}]},
         "vegan":        {"anyOf": [{"type": "boolean"}, {"type": "null"}]},
+        "no_milk":      {"anyOf": [{"type": "boolean"}, {"type": "null"}]},
         "caffeine_level": {
             "anyOf": [
                 {"type": "string", "enum": ["none", "low", "medium", "high"]},
@@ -47,7 +52,7 @@ _SCHEMA = {
     },
     "required": [
         "category", "temperature", "max_calories", "max_sugar",
-        "max_price", "dairy_free", "vegan", "caffeine_level",
+        "max_price", "dairy_free", "vegan", "no_milk", "caffeine_level",
     ],
     "additionalProperties": False,
 }

@@ -188,6 +188,8 @@ def _badges(row, c: dict) -> list[str]:
         badges.append("dairy-free ✓")
     if c.get("vegan") and row["is_vegan"]:
         badges.append("vegan ✓")
+    if c.get("no_milk") and not row.get("contains_milk", False):
+        badges.append("black / no milk ✓")
     if c.get("temperature") and row["temperature"] == c["temperature"]:
         badges.append(f"{row['temperature']} ✓")
     return badges

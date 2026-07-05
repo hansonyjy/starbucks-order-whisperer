@@ -415,7 +415,7 @@
       <div class="stage-num">2</div>
       <div>
         <h3>Filter — hard rules knock out non-qualifying drinks</h3>
-        <p>Pure deterministic logic. Category, temperature, calorie cap, sugar cap, price cap, dairy-free, vegan, and caffeine level all become strict boolean filters. Caffeine "levels" map to mg ranges derived from the training data — including a deliberate <code>medium/high</code> overlap at 150–200mg, because that's what the ground-truth labels say. If the filters are too strict and produce zero results, constraints are relaxed progressively (price first, then sugar, then calories) until something survives.</p>
+        <p>Pure deterministic logic. Category, temperature, calorie cap, sugar cap, price cap, dairy-free, vegan, black/no-milk, and caffeine level all become strict boolean filters. Caffeine "levels" map to mg ranges derived from the training data — including a deliberate <code>medium/high</code> overlap at 150–200mg, because that's what the ground-truth labels say. If the filters are too strict and produce zero results, constraints are relaxed progressively (price first, then sugar, then calories) until something survives.</p>
       </div>
     </div>
 
@@ -479,7 +479,7 @@ function constraintLabel(key, val) {
   const icons = {
     category: '📂', temperature: val === 'iced' ? '🧊' : val === 'hot' ? '🔥' : '🥤',
     max_calories: '🔥', max_sugar: '🍬', max_price: '💲',
-    dairy_free: '🥛', vegan: '🌱', caffeine_level: '⚡',
+    dairy_free: '🥛', vegan: '🌱', no_milk: '☕', caffeine_level: '⚡',
   };
   const labels = {
     category: `category: ${val}`,
@@ -489,6 +489,7 @@ function constraintLabel(key, val) {
     max_price: `max price: $${val}`,
     dairy_free: 'dairy-free',
     vegan: 'vegan',
+    no_milk: 'black / no milk',
     caffeine_level: `caffeine: ${val}`,
   };
   return { icon: icons[key] || '', text: labels[key] || `${key}: ${val}` };

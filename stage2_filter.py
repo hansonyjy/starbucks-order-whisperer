@@ -11,12 +11,41 @@ CAFFEINE_RANGES = {
     "high":   (150, float("inf")),
 }
 
+# Subcategories that are inherently milk-based (dairy or plant milk).
+_MILK_SUBCATEGORIES = {
+    "latte", "mocha", "macchiato", "flat_white", "cappuccino",
+    "cortado", "creme", "steamer", "hot_chocolate", "coconut",
+}
+_PLANT_MILK_RE   = r"oatmilk|almondmilk|coconutmilk|oat milk|almond milk|coconut milk|soy"
+_MILK_TOPPING_RE = r"cold foam|sweet cream|whipped cream"
+
+
+def _compute_contains_milk(df: pd.DataFrame) -> pd.Series:
+    """True when a drink contains milk of any kind (dairy OR plant).
+
+    contains_dairy only flags dairy, so plant-milk drinks (oatmilk/almond/coconut
+    lattes, coconutmilk refreshers) and milk-based subcategories must be detected
+    separately. Used for "black"/"no milk" requests, where any milk should be
+    excluded. Matching is ingredient-based (subcategory, plant-milk in name, milk
+    toppings) rather than scanning the description for the word "milk", which
+    misfires on prose like "perfect with or without milk".
+    """
+    name = df["name"].fillna("").str.lower()
+    desc = df["description"].fillna("").str.lower()
+    return (
+        df["contains_dairy"]
+        | df["subcategory"].isin(_MILK_SUBCATEGORIES)
+        | name.str.contains(_PLANT_MILK_RE, regex=True)
+        | (name + " " + desc).str.contains(_MILK_TOPPING_RE, regex=True)
+    )
+
 
 def load_products(path: str = "products.csv") -> pd.DataFrame:
     df = pd.read_csv(path)
     # Normalize boolean columns that pandas may read as strings
     for col in ("contains_dairy", "contains_nuts", "contains_gluten", "is_vegan"):
         df[col] = df[col].map(lambda v: v if isinstance(v, bool) else str(v).strip() == "True")
+    df["contains_milk"] = _compute_contains_milk(df)
     return df
 
 
@@ -48,6 +77,10 @@ def filter_products(constraints: dict, products_df: pd.DataFrame) -> pd.DataFram
 
     if constraints.get("vegan") is True:
         df = df[df["is_vegan"] == True]
+
+    if constraints.get("no_milk") is True:
+        milk = df["contains_milk"] if "contains_milk" in df.columns else _compute_contains_milk(df)
+        df = df[~milk.astype(bool)]
 
     caffeine_level = constraints.get("caffeine_level")
     if caffeine_level is not None and caffeine_level in CAFFEINE_RANGES:
