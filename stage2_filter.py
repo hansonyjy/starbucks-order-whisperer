@@ -11,6 +11,9 @@ CAFFEINE_RANGES = {
     "high":   (150, float("inf")),
 }
 
+# "coffee" is an umbrella category spanning every coffee preparation.
+COFFEE_CATEGORIES = {"brewed", "cold_brew", "espresso"}
+
 # Subcategories that are inherently milk-based (dairy or plant milk).
 _MILK_SUBCATEGORIES = {
     "latte", "mocha", "macchiato", "flat_white", "cappuccino",
@@ -54,7 +57,14 @@ def filter_products(constraints: dict, products_df: pd.DataFrame) -> pd.DataFram
 
     category = constraints.get("category")
     if category is not None:
-        df = df[df["category"] == category]
+        if category == "coffee":
+            # "coffee" is an umbrella across all coffee preparations. This matters
+            # for e.g. "iced coffee": brewed has no iced options, so the match must
+            # be able to span cold_brew (cold brew/nitro) and espresso (iced
+            # americano, iced shaken espresso) too — not just one of them.
+            df = df[df["category"].isin(COFFEE_CATEGORIES)]
+        else:
+            df = df[df["category"] == category]
 
     temperature = constraints.get("temperature")
     if temperature is not None:

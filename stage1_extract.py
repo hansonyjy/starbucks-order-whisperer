@@ -5,7 +5,17 @@ MODEL = "claude-haiku-4-5"
 
 _SYSTEM = """You are a Starbucks order assistant. Extract hard constraints from a customer query.
 
-category values: brewed, cold_brew, espresso, frappuccino, refresher, tea
+category values: coffee, brewed, cold_brew, espresso, frappuccino, refresher, tea
+  - coffee: a generic coffee request with no specific preparation named
+    (e.g. "coffee", "iced coffee", "plain coffee", "black coffee"). This is an
+    umbrella that matches ALL coffee preparations (brewed, cold brew, espresso).
+    Use it whenever the customer just wants "coffee" without picking a style.
+  - brewed: drip / filter / brewed / house coffee named specifically
+  - cold_brew: "cold brew" or "nitro"
+  - espresso: espresso, latte, americano, cappuccino, macchiato, mocha, flat white, cortado
+  - frappuccino: "frappuccino" or "blended"
+  - refresher: refreshers / fruit drinks
+  - tea: any tea
 temperature values: hot, iced, blended
 caffeine_level values: none, low, medium, high
   - none: explicitly decaf or no caffeine
@@ -27,7 +37,7 @@ _SCHEMA = {
     "properties": {
         "category": {
             "anyOf": [
-                {"type": "string", "enum": ["brewed", "cold_brew", "espresso", "frappuccino", "refresher", "tea"]},
+                {"type": "string", "enum": ["coffee", "brewed", "cold_brew", "espresso", "frappuccino", "refresher", "tea"]},
                 {"type": "null"},
             ]
         },
