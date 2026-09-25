@@ -20,3 +20,4 @@ queries_test.csv
 
 # macOS
 .DS_Store
+.claude/

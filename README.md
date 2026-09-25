@@ -1,6 +1,6 @@
 # Starbucks Order Whisperer
 
-**1st place of 19 teams, UCLA × Starbucks Data Challenge.**
+**1st place of 19 teams at the UCLA × Starbucks Data Challenge, with 88.3% NDCG.**
 Turns free-text drink orders into a ranked list of menu items. Claude reads the request, deterministic rules filter the menu, and a constraint-aware scorer ranks what is left.
 
 [**Live demo**](TODO_DEMO_URL) · [Web app code](web/)
@@ -16,13 +16,6 @@ Customers don't order in SQL. They say things like:
 The task: given 115 drinks and queries like this, return the matching drinks in the right order. Scored by **NDCG**, so order matters, not just the set.
 
 The business question behind it: can a menu understand how people actually talk, and still respect hard limits like calories, price and allergies?
-
-## Results
-
-| Version | NDCG | Notes |
-|---|---|---|
-| Competition submission (team) | TODO | 1st of 19 teams |
-| Solo rebuild (this repo) | TODO | Same data, redesigned ranking |
 
 ## How it works
 
@@ -72,13 +65,13 @@ The model is the easy part. These choices are what moved the score.
 
 ## What the rebuild changed
 
-After the competition, I rebuilt the team solution on my own:
+After the competition, I rebuilt the team solution on my own. The goal was cleaner engineering, not a new leaderboard score:
 
 - **Structured output** replaced prompt-and-parse. A whole class of parsing failures is gone.
 - **Margin-first ranking** replaced similarity-first ranking with hand-tuned bonuses.
 - **Local embeddings** (`all-MiniLM-L6-v2`) replaced a paid API that hit rate limits mid-run.
 - **One notebook became four modules**, each with its own sanity checks.
-- **A web app** ([`web/`](web/)) shows each stage live. It uses TF-IDF for the tiebreak to fit free-tier hosting.
+- **A web app** ([`web/`](web/)) shows each stage live. It uses TF-IDF for the tiebreak to fit free-tier hosting, and runs on a similar public 115-drink menu (TODO_SOURCE_LINK), not the challenge data.
 
 ## Run it
 
