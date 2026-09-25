@@ -1,150 +1,120 @@
-# ☕ Starbucks Order Whisperer
+# Starbucks Order Whisperer
 
-> **🏆 1st place out of 19 teams — UCLA Starbucks Data Challenge**
+**1st place of 19 teams, UCLA × Starbucks Data Challenge.**
+Turns free-text drink orders into a ranked list of menu items. Claude reads the request, deterministic rules filter the menu, and a constraint-aware scorer ranks what is left.
 
-A three-stage recommendation engine that turns messy, human, half-caffeinated Starbucks orders like:
+[**Live demo**](TODO_DEMO_URL) · [Web app code](web/)
+
+![BrewMatch demo](docs/brewmatch.png)
+
+## The problem
+
+Customers don't order in SQL. They say things like:
 
 > *"yo i need a latte that's max 250 calories and 25g sugar or less"*
 
-…into a ranked list of the drinks you actually want.
+The task: given 115 drinks and queries like this, return the matching drinks in the right order. Scored by **NDCG**, so order matters, not just the set.
 
-This repo is my **solo rebuild** of our winning solution — same idea, cleaner architecture, and a smarter ranking brain. (More on why it's better at the bottom.)
+The business question behind it: can a menu understand how people actually talk, and still respect hard limits like calories, price and allergies?
 
----
+## Results
 
-## 🧠 The Problem
+| Version | NDCG | Notes |
+|---|---|---|
+| Competition submission (team) | TODO | 1st of 19 teams |
+| Solo rebuild (this repo) | TODO | Same data, redesigned ranking |
 
-You're given:
-- **115 drinks**, each with category, temperature, caffeine, calories, sugar, price, dietary flags, and a description.
-- **Natural-language queries** written the way real people talk — slang, typos, vibes, and all.
-
-Your job: return the products ranked best-match-first. Scored by **NDCG**, so getting the *order* right matters, not just the set.
-
-The catch? People don't speak in SQL. "Something to wake me up that won't break the bank and no dairy please" has to become structured filters *and* a sensible ranking. That's where the pipeline comes in.
-
----
-
-## 🏗️ How It Works — Three Stages
+## How it works
 
 ```
-   query: "iced oat-milk latte, keep it under 250 cal"
-              │
-              ▼
-   ┌──────────────────────────┐
-   │  1. EXTRACT  (Claude)    │   natural language → structured constraints
-   └──────────────────────────┘
-              │  { category: espresso, temperature: iced,
-              │    dairy_free: true, max_calories: 250 }
-              ▼
-   ┌──────────────────────────┐
-   │  2. FILTER   (pandas)     │   hard rules — only drinks that qualify
-   └──────────────────────────┘
-              │  8 candidate drinks survive
-              ▼
-   ┌──────────────────────────┐
-   │  3. RANK     (hybrid)     │   constraint margin + semantic tiebreak
-   └──────────────────────────┘
-              │
-              ▼
-   ranked list → submission.csv ✅
+query: "iced oat-milk latte, keep it under 250 cal"
+            │
+            ▼
+┌──────────────────────────┐
+│ 1. EXTRACT   Claude      │  text → structured constraints (JSON schema)
+└──────────────────────────┘
+            │  { category: espresso, temperature: iced,
+            │    dairy_free: true, max_calories: 250 }
+            ▼
+┌──────────────────────────┐
+│ 2. FILTER    pandas      │  hard rules, fully deterministic
+└──────────────────────────┘
+            │  8 drinks survive
+            ▼
+┌──────────────────────────┐
+│ 3. RANK      hybrid      │  constraint margin + semantic tiebreak
+└──────────────────────────┘
+            │
+            ▼
+      ranked drink list
 ```
 
-### Stage 1 — Extract 🔍 (`stage1_extract.py`)
-Claude (`claude-haiku-4-5`) reads the query and returns constraints as JSON. The trick: it's pinned to a **JSON schema via structured output**, so the model *physically cannot* hand back malformed JSON. No regex, no markdown-fence stripping, no `try/except` prayer circle. There's also a deliberate guard against the classic trap — *"it's hot out"* should **not** set `temperature: iced`.
+**1. Extract** (`stage1_extract.py`). Claude Haiku 4.5 maps the query to typed fields. Output is pinned to a JSON schema, so it can't return malformed JSON.
 
-A couple of extraction rules earned their keep the hard way:
-- **`category: coffee`** — a generic umbrella for "coffee" / "iced coffee" / "plain coffee" requests that don't name a specific style. Without it, "iced coffee" got pinned to a single category (`cold_brew`) and silently dropped Iced Americano — since the `brewed` category has zero iced options in this menu, "coffee" has to be able to span `brewed` + `cold_brew` + `espresso` at once.
-- **`no_milk`** — distinct from (and stronger than) `dairy_free`. "Black coffee" or "just black" excludes *any* milk, dairy or plant (oat, almond, coconut), which `dairy_free` alone can't express.
+**2. Filter** (`stage2_filter.py`). Plain pandas. Category, temperature, calories, sugar, price, dairy, vegan, milk and caffeine become hard filters.
 
-### Stage 2 — Filter 🧹 (`stage2_filter.py`)
-Pure, deterministic pandas. Category (including the `coffee` umbrella), temperature, calories, sugar, price, dairy-free, vegan, black/no-milk, and caffeine all become hard filters. Caffeine "levels" map to mg ranges that were **reverse-engineered from the training data** — including a deliberate medium/high overlap at 150–200mg, because that's how the ground truth actually behaves. The no-milk filter is ingredient-based (subcategory + plant-milk name + foam/cream toppings), not a keyword scan of the description — "perfect with or without milk" in a tea's description shouldn't count as containing milk.
-
-### Stage 3 — Rank 🎯 (`stage3_rank.py`)
-The interesting part. Ranking is a **hybrid score**:
+**3. Rank** (`stage3_rank.py`). A hybrid score:
 
 ```
-score = constraint_margin  +  ε · semantic_similarity      (ε = 0.001)
+score = constraint_margin + 0.001 × semantic_similarity
 ```
 
-- **Constraint margin (primary):** how comfortably a drink sits *inside* the limits. Under a 250-cal cap, a 0-cal drink beats a 200-cal one. Caffeine-seeking queries rank by *most* caffeine; "keep it mild" queries rank by *least*.
-- **Semantic similarity (tiebreaker):** a local `all-MiniLM-L6-v2` embedding model breaks ties between drinks the constraints can't separate. It's bounded by a tiny ε so it can **never** override a real constraint gap — exactly what the training data says should happen.
+## Key decisions
 
-No paid embedding API, no rate limits, runs offline.
+The model is the easy part. These choices are what moved the score.
 
----
+- **Use the LLM only where language is hard.** Claude does extraction. Everything after it is deterministic, so results are reproducible and easy to debug.
+- **Rank by constraint margin, not similarity.** Under a 250-cal cap, a 0-cal drink should beat a 200-cal one. The training labels confirmed this, so margin is the primary signal.
+- **Keep similarity as a tiebreaker only.** Its weight (0.001) is too small to ever override a real constraint gap.
+- **Learn caffeine levels from the data.** "Medium" and "high" map to mg ranges reverse-engineered from the labels, including a real 150 to 200 mg overlap.
+- **Model what people mean.** "It's hot out" does not mean iced. "Iced coffee" spans brewed, cold brew and espresso. "Black coffee" excludes plant milks too, which `dairy_free` alone can't express.
+- **Never return nothing.** If filters remove every drink, the pipeline relaxes price, then sugar, then calories, until something fits.
 
-## 🚀 Quickstart
+## What the rebuild changed
 
-> ⚠️ **Dataset not included.** The product catalog and queries are confidential challenge
-> materials and are intentionally left out of this repo. To run the pipeline you'll need
-> your own `products.csv`, `queries_train.csv`, and `queries_test.csv` following the schema
-> described in [Data Format](#-data-format) below.
+After the competition, I rebuilt the team solution on my own:
+
+- **Structured output** replaced prompt-and-parse. A whole class of parsing failures is gone.
+- **Margin-first ranking** replaced similarity-first ranking with hand-tuned bonuses.
+- **Local embeddings** (`all-MiniLM-L6-v2`) replaced a paid API that hit rate limits mid-run.
+- **One notebook became four modules**, each with its own sanity checks.
+- **A web app** ([`web/`](web/)) shows each stage live. It uses TF-IDF for the tiebreak to fit free-tier hosting.
+
+## Run it
+
+The challenge dataset is confidential and not included. Bring your own files using the schema below.
 
 ```bash
-# 1. Install dependencies
 pip install -r requirements.txt
-
-# 2. Set your Anthropic API key (Stage 1 uses Claude)
 export ANTHROPIC_API_KEY="sk-ant-..."
-
-# 3. Run the full pipeline (point it at your own queries file)
-python pipeline.py queries_test.csv
+python pipeline.py queries_test.csv      # writes submission.csv
 ```
 
-Out comes `submission.csv` with a ranked product list for every query.
-
-Each stage is also runnable on its own — every file has a `__main__` block with built-in sanity checks against the training data:
+Each stage also runs on its own with built-in checks:
 
 ```bash
-python stage1_extract.py    # field-level extraction accuracy
-python stage2_filter.py     # filter correctness vs. known answers
-python stage3_rank.py       # ranking recall on 3 worked examples
+python stage1_extract.py   # field-level extraction accuracy
+python stage2_filter.py    # filter correctness
+python stage3_rank.py      # ranking on worked examples
 ```
 
----
+**Data format**
 
-## 📁 Repo Tour
+- `products.csv`: `product_id, name, category, subcategory, temperature, caffeine_mg, calories, sugar_g, protein_g, contains_dairy, contains_nuts, contains_gluten, is_vegan, description, price`
+- `queries_*.csv`: `query_id, query_text` (training set adds labels)
 
-| File | What it does |
-|------|--------------|
-| `pipeline.py` | Orchestrates all three stages + the fallback logic |
-| `stage1_extract.py` | Constraint extraction with Claude + JSON schema |
-| `stage2_filter.py` | Deterministic product filtering |
-| `stage3_rank.py` | Hybrid constraint-margin + semantic ranking |
+## Repo layout
 
-*(The challenge dataset — `products.csv`, `queries_train.csv`, `queries_test.csv` — is confidential and not distributed with this repo.)*
+| Path | Purpose |
+|---|---|
+| `pipeline.py` | Runs all three stages plus fallback |
+| `stage1_extract.py` | Claude extraction with JSON schema |
+| `stage2_filter.py` | Deterministic filtering |
+| `stage3_rank.py` | Margin-first hybrid ranking |
+| `web/` | FastAPI backend and demo frontend |
 
----
+## Credits
 
-## 📋 Data Format
+Competition solution built with TODO_TEAMMATES. This repo is my solo rebuild and contains only my own code.
 
-The pipeline expects three CSVs. Bring your own following these schemas:
-
-**`products.csv`** — one row per drink:
-`product_id, name, category, subcategory, temperature, caffeine_mg, calories, sugar_g, protein_g, contains_dairy, contains_nuts, contains_gluten, is_vegan, description, price`
-
-**`queries_*.csv`** — one row per customer query:
-`query_id, query_text` (plus labeled `relevant_products` and `constraint_*` columns in the training set for tuning)
-
----
-
-## 🛟 Fallback Logic (because real data is mean)
-
-If the hard filters wipe out *every* drink (someone wants a $3 vegan triple-shot under 50 calories), the pipeline doesn't shrug and return nothing. It **progressively relaxes** the most restrictive numeric constraints one at a time — price, then sugar, then calories — until something survives. Last resort: rank the whole menu. You always get an answer.
-
----
-
-## ✨ Why This Rebuild Beats the Original
-
-The competition version got the win. Then I went back and rebuilt it solo — and made it genuinely better:
-
-- **Bulletproof Stage 1** — JSON-schema structured output replaced fragile prompt-and-parse, killing an entire class of parsing failures.
-- **Smarter ranking** — constraint *margin* as the primary signal (grounded in the training labels) instead of leaning on embedding similarity and hand-wavy "simplicity bonuses."
-- **Faster & free** — local embeddings replaced a paid, rate-limited embedding API. (The original literally hit `429 Too Many Requests` mid-run.)
-- **Actually maintainable** — four focused modules, each with its own tests, instead of one long notebook.
-
-Same problem. Better engineering. ☕
-
----
-
-*Built for the UCLA × Starbucks Data Challenge. The dataset is confidential and property of the challenge organizers — it is **not** included in this repository. This repo contains only my own pipeline code.*
+*Built for the UCLA × Starbucks Data Challenge. The dataset belongs to the challenge organizers.*
