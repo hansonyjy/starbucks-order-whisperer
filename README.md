@@ -3,7 +3,7 @@
 **1st place of 19 teams at the UCLA × Starbucks Data Challenge, with 88.3% NDCG.**
 Turns free-text drink orders into a ranked list of menu items. Claude reads the request, deterministic rules filter the menu, and a constraint-aware scorer ranks what is left.
 
-[**Live demo**](TODO_DEMO_URL) · [Web app code](web/)
+[**Live demo**](https://starbucks-order-whisperer.onrender.com/) · [Web app code](web/)
 
 ![BrewMatch demo](docs/brewmatch.png)
 
@@ -63,15 +63,15 @@ The model is the easy part. These choices are what moved the score.
 - **Model what people mean.** "It's hot out" does not mean iced. "Iced coffee" spans brewed, cold brew and espresso. "Black coffee" excludes plant milks too, which `dairy_free` alone can't express.
 - **Never return nothing.** If filters remove every drink, the pipeline relaxes price, then sugar, then calories, until something fits.
 
-## What the rebuild changed
+## Why I rebuilt it after winning
 
-After the competition, I rebuilt the team solution on my own. The goal was cleaner engineering, not a new leaderboard score:
+Winning wasn't the end of the question for me. I wanted to know if the solution could be genuinely better, not just first, and I wanted it to be something people could actually use, not a notebook that only runs during judging. So I rebuilt it solo, end to end:
 
 - **Structured output** replaced prompt-and-parse. A whole class of parsing failures is gone.
 - **Margin-first ranking** replaced similarity-first ranking with hand-tuned bonuses.
 - **Local embeddings** (`all-MiniLM-L6-v2`) replaced a paid API that hit rate limits mid-run.
 - **One notebook became four modules**, each with its own sanity checks.
-- **A web app** ([`web/`](web/)) shows each stage live. It uses TF-IDF for the tiebreak to fit free-tier hosting, and runs on a similar public 115-drink menu (TODO_SOURCE_LINK), not the challenge data.
+- **A live web app** ([`web/`](web/)) so anyone can try it, not just re-run a script. It uses TF-IDF for the tiebreak to fit free-tier hosting, and runs on a public 115-drink menu dataset, not the original challenge data.
 
 ## Run it
 
@@ -106,8 +106,6 @@ python stage3_rank.py      # ranking on worked examples
 | `stage3_rank.py` | Margin-first hybrid ranking |
 | `web/` | FastAPI backend and demo frontend |
 
-## Credits
+---
 
-Competition solution built with TODO_TEAMMATES. This repo is my solo rebuild and contains only my own code.
-
-*Built for the UCLA × Starbucks Data Challenge. The dataset belongs to the challenge organizers.*
+*The competition win was a team effort. This repo is my own solo rebuild afterward, built from scratch and containing only my own code.*
