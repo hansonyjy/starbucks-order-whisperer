@@ -1,6 +1,7 @@
 # Starbucks Order Whisperer
 
-**1st place of 19 teams at the UCLA × Starbucks Data Challenge, with 88.3% NDCG.**
+**1st of 19 at the UCLA × Starbucks Data Challenge, with 88.3% NDCG.**
+
 Turns free-text drink orders into a ranked list of menu items. Claude reads the request, deterministic rules filter the menu, and a constraint-aware scorer ranks what is left.
 
 [**Live demo**](https://starbucks-order-whisperer.onrender.com/) · [Web app code](web/)
@@ -63,9 +64,9 @@ The model is the easy part. These choices are what moved the score.
 - **Model what people mean.** "It's hot out" does not mean iced. "Iced coffee" spans brewed, cold brew and espresso. "Black coffee" excludes plant milks too, which `dairy_free` alone can't express.
 - **Never return nothing.** If filters remove every drink, the pipeline relaxes price, then sugar, then calories, until something fits.
 
-## Why I rebuilt it after winning
+## What I built after the competition
 
-Winning wasn't the end of the question for me. I wanted to know if the solution could be genuinely better, not just first, and I wanted it to be something people could actually use, not a notebook that only runs during judging. So I rebuilt it solo, end to end:
+Winning wasn't the end of the question for me. I wanted to know if the solution could be genuinely better, not just first, and I wanted it to be something people could actually use, not a notebook that only runs during judging. So I rebuilt it on my own, from scratch:
 
 - **Structured output** replaced prompt-and-parse. A whole class of parsing failures is gone.
 - **Margin-first ranking** replaced similarity-first ranking with hand-tuned bonuses.
@@ -108,4 +109,4 @@ python stage3_rank.py      # ranking on worked examples
 
 ---
 
-*The competition win was a team effort. This repo is my own solo rebuild afterward, built from scratch and containing only my own code.*
+*This is a solo rebuild of a team challenge entry. The competition placement was a team result; after it, I rebuilt the system from scratch on my own. Everything in this repository is my own code: the extraction prompt and schema, the filtering and ranking logic, the evaluation scripts, the FastAPI backend, the frontend and the deployment. Built by Hanson Yang.*
